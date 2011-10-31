@@ -14,6 +14,10 @@ import pygame.locals
 SANDBOX_CONTINUE    = True
 SANDBOX_TERMINATE   = False
 
+MOUSE_BTN_LEFT      = 1
+MOUSE_BTN_MIDDLE    = 2
+MOUSE_BTN_RIGHT     = 3
+
 # =============================================================================
 #    clase SandBoxWndDelegate, en quien delega SandBoxWnd para las operaciones 
 #    'estandar' y que servira de clase base
@@ -28,7 +32,7 @@ class SandBoxWndDelegate:
     def fn_frame_updater(self, screen, clock, tick_time):
         pass
     
-    def fn_event_manager(self, evt_lst):
+    def fn_event_manager(self, lst_event):
         return SANDBOX_CONTINUE
 
 # =============================================================================
@@ -77,7 +81,7 @@ class SandBoxWnd:
                 self.mainloop = self.delegate.fn_event_manager(lst_evt)
 
                 # actualizacion del frame
-                self.delegate.frame_updater(self.screen, self.clock, tick_time)
+                self.delegate.fn_frame_updater(self.screen, self.clock, tick_time)
 
                 # update del display
                 pygame.display.update()
