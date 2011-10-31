@@ -4,10 +4,12 @@ Created on 31/10/2011
 @author: raul
 '''
 
+import objects
+
 # =============================================================================
 #    Base class for Agent definition
 #
-class Agent:
+class Agent(objects.Drawable):
     '''
     Base class for Agent definition
     '''
