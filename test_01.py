@@ -30,6 +30,8 @@ class MyAgent(Agent):
             xf = self.target.x
             yf = self.target.y
             
+            self.angle = math.atan2(yf-self.pto.y, xf-self.pto.x)
+            
             dx = (self.pto.x-xf)**2
             dy = (self.pto.y-yf)**2
             
@@ -44,21 +46,18 @@ class MyAgent(Agent):
                 self.pto.y = 0.8*self.pto.y + 0.2 * yf
 
     def draw(self, surface):
-        p1=(self.pto.x, self.pto.y)
-        p2=(self.pto.x + self.d*math.cos(self.angle), self.pto.y + self.d*math.sin(self.angle))
+        p1=(int(self.pto.x), int(self.pto.y))
+        p2=(int(self.pto.x + self.d*math.cos(self.angle)), int(self.pto.y + self.d*math.sin(self.angle)))
         
         pygame.draw.line(surface, self.color,p1,p2)
-        pygame.draw.circle(surface, self.color, p1, self.rad)
+        pygame.draw.circle(surface, self.color, p1, int(self.rad))
     
     def set_target(self, target):
         self.target =  target
         
-    
     def set_move(self, move):
-        self.move=move
+        self.move = move
 
-    def swap_move(self):
-        self.set_move(not self.move)
     
 
 # =============================================================================
