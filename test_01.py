@@ -77,6 +77,8 @@ class MyDelegate(sandbox.SandBoxWndDelegate):
         
         self.track = objects.Track()
         self.track.add_point(self.agent.pto)
+        
+        self.lst_objects = [self.agent, self.target, self.track]
 
     def fn_init(self, screen):
         self.bg = pygame.Surface(screen.get_size())
@@ -86,16 +88,17 @@ class MyDelegate(sandbox.SandBoxWndDelegate):
         #   update del status
         #
         if self.update:
-            self.agent.update(screen, clock, tick_time)
+            for obj in self.lst_objects:
+                obj.update(screen, clock, tick_time)
+            
             self.track.add_point(self.agent.pto)
         
         #   redraw de los objetos
         #
         self.bg.fill(self.back_color)
     
-        self.target.draw(self.bg)
-        self.agent.draw(self.bg)
-        self.track.draw(self.bg)
+        for obj in self.lst_objects:
+            obj.draw(self.bg)
     
         #   actualizacion del screen
         #

@@ -11,14 +11,17 @@
 import pygame
 import math
 
-class Drawable:
+class ObjectBase:
+    def update(self, screen, clock, tick_time):
+        pass
+    
     def draw(self, surface):
         pass
 
 # =============================================================================
 #   clase Point
 #
-class Point(Drawable):
+class Point(ObjectBase):
     def __init__(self, x,y):
         self.x=x
         self.y=y
@@ -26,9 +29,6 @@ class Point(Drawable):
     def set_pos(self, position):
         self.x=position[0]
         self.y=position[1]
-
-    def draw(self, surface):
-        pass
 
 
 # =============================================================================
@@ -38,9 +38,9 @@ class Cross(Point):
     def __init__(self, x,y, color):
         Point.__init__(self, x,y)
 
-        self.color=color
+        self.color = color
         
-        self.d=10
+        self.d = 10
 
     def draw(self, surface):
         pygame.draw.line(surface, self.color, (self.x, self.y-self.d), (self.x, self.y+self.d))
@@ -50,10 +50,10 @@ class Cross(Point):
 # =============================================================================
 #   clase Track
 #
-class Track(Drawable):
+class Track(ObjectBase):
     def __init__(self):
-        self.ptos=[]
-        self.color=(0,200,0)
+        self.ptos  = []
+        self.color = (0,200,0)
 
     def add_point(self, p):
         self.add(p.x,p.y)

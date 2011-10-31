@@ -9,17 +9,11 @@ import objects
 # =============================================================================
 #    Base class for Agent definition
 #
-class Agent(objects.Drawable):
+class Agent(objects.ObjectBase):
     '''
     Base class for Agent definition
     '''
 
     def __init__(self):
-        pass
-    
-    def update(self, screen, clock, tick_time):
-        pass
-    
-    def draw(self, surface):
         pass
     
