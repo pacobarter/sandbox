@@ -9,13 +9,12 @@
 # ============================================================================= 
 
 import pygame
-import math
 
 class ObjectBase:
     def update(self, screen, clock, tick_time):
         pass
     
-    def draw(self, surface):
+    def draw(self, surface, clock, tick_time):
         pass
 
 # =============================================================================
@@ -42,7 +41,7 @@ class Cross(Point):
         
         self.d = 10
 
-    def draw(self, surface):
+    def draw(self, surface, clock, tick_time):
         pygame.draw.line(surface, self.color, (self.x, self.y-self.d), (self.x, self.y+self.d))
         pygame.draw.line(surface, self.color, (self.x-self.d, self.y), (self.x+self.d, self.y))
 
@@ -61,7 +60,7 @@ class Track(ObjectBase):
     def add(self, x,y):
         self.ptos.append((x,y))
 
-    def draw(self, surface):
+    def draw(self, surface, clock, tick_time):
         if len(self.ptos)>1:
             pygame.draw.lines(surface, self.color, False, self.ptos)
 

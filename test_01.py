@@ -14,6 +14,8 @@ import objects
 #
 class MyAgent(Agent):
     def __init__(self, x,y, angle):
+        Agent.__init__(self)
+        
         self.pto   = objects.Point(x,y)
         self.angle = angle
         
@@ -26,6 +28,8 @@ class MyAgent(Agent):
         self.target = None
     
     def update(self, screen, clock, tick_time):
+        Agent.update(self, screen, clock, tick_time)
+        
         if self.target:
             xf = self.target.x
             yf = self.target.y
@@ -45,7 +49,9 @@ class MyAgent(Agent):
                 self.pto.x = 0.8*self.pto.x + 0.2 * xf
                 self.pto.y = 0.8*self.pto.y + 0.2 * yf
 
-    def draw(self, surface):
+    def draw(self, surface, clock, tick_time):
+        Agent.draw(self, surface, clock, tick_time)
+        
         p1=(int(self.pto.x), int(self.pto.y))
         p2=(int(self.pto.x + self.d*math.cos(self.angle)), int(self.pto.y + self.d*math.sin(self.angle)))
         
@@ -63,11 +69,10 @@ class MyAgent(Agent):
 # =============================================================================
 #
 #
-class MyDelegate(sandbox.SandBoxWndDelegate):
+class MyDelegate(sandbox.DefaultSandBoxWndDelegate):
     def __init__(self):
-        self.color      = (132,32,32)
-        self.back_color = (25,25,25)
-
+        sandbox.DefaultSandBoxWndDelegate.__init__(self)
+        
         self.update = False
 
         self.target = objects.Target(200,300)
@@ -78,69 +83,44 @@ class MyDelegate(sandbox.SandBoxWndDelegate):
         self.track = objects.Track()
         self.track.add_point(self.agent.pto)
         
-        self.lst_objects = [self.agent, self.target, self.track]
-
-    def fn_init(self, screen):
-        self.bg = pygame.Surface(screen.get_size())
-        self.bg = self.bg.convert()
-    
-    def fn_frame_updater(self, screen, clock, tick_time):
-        #   update del status
-        #
-        if self.update:
-            for obj in self.lst_objects:
-                obj.update(screen, clock, tick_time)
-            
-            self.track.add_point(self.agent.pto)
+        self.add_object(self.agent)
+        self.add_object(self.target)
+        self.add_object(self.track)
         
-        #   redraw de los objetos
-        #
-        self.bg.fill(self.back_color)
-    
-        for obj in self.lst_objects:
-            obj.draw(self.bg)
-    
-        #   actualizacion del screen
-        #
-        screen.blit(self.bg,(0,0))
-    
-    def fn_event_manager(self, lst_event):
-        ret = sandbox.SANDBOX_CONTINUE
-    
-        for event in lst_event:
-            if event.type == pygame.QUIT:
-                ret = sandbox.SANDBOX_TERMINATE
-            
-            elif event.type == pygame.KEYDOWN:
-                ret = self.manage_key_down(event)
-            
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                ret = self.manage_mouse_btn_down(event)
-            
-        return ret
+    def fn_needs_update(self):
+        return self.update
 
-    #       event MOUSE_BTN_DOWN
-    #
-    def manage_mouse_btn_down(self, event):
-        if event.button == sandbox.MOUSE_BTN_LEFT:
-            self.target.set_pos(event.pos)
+    def fn_logic_updater(self, clock, tick_time):
+        sandbox.DefaultSandBoxWndDelegate.fn_logic_updater(self, clock, tick_time)
+        
+        self.track.add_point(self.agent.pto)
+
+    def fn_mouse_event(self, id_button, is_down, pos):
+#        if is_down and id_button == sandbox.MOUSE_BTN_LEFT:
+#            self.target.set_pos(pos)
         
         return sandbox.SANDBOX_CONTINUE
 
+    def fn_mouse_motion_event(self, pos, rel, buttons):
+        if sandbox.MOUSE_BTN_LEFT in buttons:
+            self.target.set_pos(pos)
+        
+        return sandbox.SANDBOX_CONTINUE
 
-
-    #       event KEY DOWN
-    #
-    def manage_key_down(self, event):
+    def fn_keyb_event(self, key, is_down):
         ret = sandbox.SANDBOX_CONTINUE
     
-        if event.key == pygame.K_ESCAPE:
-            ret = sandbox.SANDBOX_TERMINATE
-            
-        elif event.key == pygame.K_SPACE:
-            self.update = True
+        if is_down:
+            if key == pygame.K_ESCAPE:
+                ret = sandbox.SANDBOX_TERMINATE
+                
+            elif key == pygame.K_SPACE:
+                self.update = True
         
         return ret
+
+    def fn_default_event_handler(self, event):
+        return sandbox.SANDBOX_CONTINUE
 
 
 # =============================================================================
