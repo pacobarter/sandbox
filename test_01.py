@@ -6,38 +6,36 @@ Created on 31/10/2011
 import math
 import pygame
 import sandbox
-from agent import Agent
+import agent
 import objects
 
 # =============================================================================
-#   clase Agente
+#   clase Agente de ejemplo
 #
-class MyAgent(Agent):
-    def __init__(self, x,y, angle):
-        Agent.__init__(self)
-        
-        self.pto   = objects.Point(x,y)
-        self.angle = angle
-        
-        self.d = 15.0
-        self.rad = 3.0
-        self.color = (0,50,200)
-    
-        self.move = False
+class MyAgent(agent.Agent):
+    def __init__(self, pos, angle):
+        agent.Agent.__init__(self, agent.AgentDrawer2D(pos, angle))
         
         self.target = None
-    
-    def update(self, screen, clock, tick_time):
-        Agent.update(self, screen, clock, tick_time)
+        self.move = False
         
+    def set_target(self, target):
+        self.target = target
+
+    def set_move(self, move):
+        self.move = move
+
+    def update(self, screen, clock, tick_time):
         if self.target:
-            xf = self.target.x
-            yf = self.target.y
+            x, y = self.drawer.get_pos()
             
-            self.angle = math.atan2(yf-self.pto.y, xf-self.pto.x)
+            xf = self.target.get_x()
+            yf = self.target.get_y()
             
-            dx = (self.pto.x-xf)**2
-            dy = (self.pto.y-yf)**2
+            self.drawer.set_angle(math.atan2(yf - y, xf - x))
+            
+            dx = (x - xf)**2
+            dy = (y - yf)**2
             
             if math.sqrt(dx+dy)<1:
                 self.set_move(False)
@@ -46,25 +44,9 @@ class MyAgent(Agent):
                 self.set_move(True)
             
             if self.move:
-                self.pto.x = 0.8*self.pto.x + 0.2 * xf
-                self.pto.y = 0.8*self.pto.y + 0.2 * yf
-
-    def draw(self, surface, clock, tick_time):
-        Agent.draw(self, surface, clock, tick_time)
-        
-        p1=(int(self.pto.x), int(self.pto.y))
-        p2=(int(self.pto.x + self.d*math.cos(self.angle)), int(self.pto.y + self.d*math.sin(self.angle)))
-        
-        pygame.draw.line(surface, self.color,p1,p2)
-        pygame.draw.circle(surface, self.color, p1, int(self.rad))
-    
-    def set_target(self, target):
-        self.target =  target
-        
-    def set_move(self, move):
-        self.move = move
-
-    
+                self.drawer.set_x(0.8 * x + 0.2 * xf)
+                self.drawer.set_y(0.8 * y + 0.2 * yf)
+                
 
 # =============================================================================
 #
@@ -75,13 +57,13 @@ class MyDelegate(sandbox.DefaultSandBoxWndDelegate):
         
         self.update = False
 
-        self.target = objects.Target(200,300)
+        self.target = objects.Target([200,300])
 
-        self.agent  = MyAgent(400,100,math.pi/6.0)
+        self.agent  = MyAgent([400,100], math.pi/6.0)
         self.agent.set_target(self.target)
         
         self.track = objects.Track()
-        self.track.add_point(self.agent.pto)
+        self.track.add_point(self.agent.drawer.get_pos())
         
         self.add_object(self.agent)
         self.add_object(self.target)
@@ -93,7 +75,7 @@ class MyDelegate(sandbox.DefaultSandBoxWndDelegate):
     def fn_logic_updater(self, clock, tick_time):
         sandbox.DefaultSandBoxWndDelegate.fn_logic_updater(self, clock, tick_time)
         
-        self.track.add_point(self.agent.pto)
+        self.track.add_point(self.agent.drawer.get_pos())
 
     def fn_mouse_event(self, id_button, is_down, pos):
 #        if is_down and id_button == sandbox.MOUSE_BTN_LEFT:
